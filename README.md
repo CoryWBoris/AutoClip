@@ -1,4 +1,8 @@
 # AutoClip
+
+![Stability Badge](https://img.shields.io/badge/-stable-blue)  
+By: Cory Boris  
+© 2024 MIT License
 A Control Surface for Automatically Changing Clips' Names Based on the Name of their Parent Track In Ableton Live 11+ WITHOUT PLUGINS ;)
 
 \*\*for Mac or Windows\*\*
@@ -34,7 +38,7 @@ For now, every clip is named at once when loading the control surface, I can und
 <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>  
 A custom color layout maker for Ableton Live 11+ for changing track and clip colors based on name
 
-**Coffees Welcome!**
+### Coffees Welcome!
 - Paypal: tromboris@gmail.com
 - Venmo: @Cory-Boris
 - Ethereum Address: `0x3f6af994201c17eF1E86ff057AB2a2F6CB0D1f6a`
