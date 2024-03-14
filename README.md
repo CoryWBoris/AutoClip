@@ -33,11 +33,11 @@ None so far, but please let me know if there are any by all means!
 
 ## Future Updates:
 I was thinking it would be cool to use the name of the track to determine if clips will be renamed or not based on a code word.  
-For now, every clip is named at once when loading the control surface, I can understand if this is a bit 'all or a nothing' but I figured you always have the option to just not use the control surface.  
+For now, every clip is named at once when loading the control surface, I can understand if this is a bit 'all or a nothing' but I figured you always have the option to deselect the control surface in settings.  
 
 ## Other Related Programs:
 <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>  
-A custom color layout maker for Ableton Live 11+ for changing track and clip colors based on name
+A stunning custom color layout maker for Ableton Live 11+ which instantanesouly changes track and clip colors based on name, no plugins necessary.
 
 ### Coffees Welcome!
 - Paypal: tromboris@gmail.com
