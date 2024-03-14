@@ -25,6 +25,7 @@ In Arrangement View: Rename a Midi or Audio Track and then the names of every cl
 In Session View: Rename a Midi or Audio Track and then the clips you drag to these tracks or the clips already existing will be renamed the name of the track + the number of the clip from top to bottom.  
 The number in a renamed clip's name in Session view is not based on the next adjacent clip but rather the next adjacent clip slot whether or not there is a clip. I thought this made more sense for session view.  
 Anytime you drop a clip in a track, it will automatically be renamed to match the above rules.  
+Take Lanes are unaffected by this script.  
 Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
 
 ## Open Issues:
