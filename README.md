@@ -7,7 +7,7 @@ By: Cory Boris
 
 \*\*for Mac or Windows\*\*
 
-### 5 Steps to setup. -note-, this assumes you are using the default user library folder. If you have moved this folder externally or otherwise, make a Remote Scripts folder inside of whatever user library folder you have pointed Ableton to, and start from step 2:
+### 6 Steps to setup. -note-, this assumes you are using the default user library folder. If you have moved this folder externally or otherwise, make a Remote Scripts folder inside of whatever user library folder you have pointed Ableton to, and start from step 2:
 1. Mac users:  
    Go to `/Users/your_username/Music/Ableton/User Library`  
    Windows users:  
@@ -20,13 +20,13 @@ By: Cory Boris
 
 **Note**: You can add the 2 mentioned files from here to their respective folders as shown by my tutorial while Ableton is open or quit, but if Ableton is open, then you *will* have to restart Ableton for the selected control surface to go into effect. The reason being is that Ableton compiles python and loads python code into memory when Ableton starts, but not after it loads up. This means for you using the software that in order to update this script if and when it is updated, then you will have to restart Ableton to use the updated software.
 
-## Instructions for use:
-In Arrangement View: Rename a Midi or Audio Track and then the names of every clip are **magically** changed to the name of their individual tracks + the number the clip is in order from left to right. Order is always maintained.  
-In Session View: Rename a Midi or Audio Track and then the clips you drag to these tracks or the clips already existing will be renamed the name of the track + the number of the clip from top to bottom.  
-The number in a renamed clip's name in Session view is not based on the next adjacent clip but rather the next adjacent clip slot whether or not there is a clip. I thought this made more sense for session view.  
-Anytime you drop a clip in a track, it will automatically be renamed to match the above rules.  
-Take Lanes are unaffected by this script.  
-Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
+## How to use:
+1. In Arrangement View: Rename a Midi or Audio Track and then the names of every clip are **magically** changed to the name of their individual tracks + the number the clip is in order from left to right. Order is always maintained.  
+2. In Session View: Rename a Midi or Audio Track and then the clips you drag to these tracks or the clips already existing will be renamed the name of the track + the number of the clip from top to bottom.  
+3. The number in a renamed clip's name in Session view is not based on the next adjacent clip but rather the next adjacent clip slot whether or not there is a clip. I thought this made more sense for session view.  
+4. Anytime you drop a clip in a track, it will automatically be renamed to match the above rules.  
+5. Take Lanes are unaffected by this script.  
+6. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
 
 ## Open Issues:
 None so far, but please let me know if there are any by all means!
