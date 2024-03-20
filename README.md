@@ -27,7 +27,7 @@ By: Cory Boris
 3. The number in a renamed clip's name in Session view is not based on the next adjacent clip but rather the next adjacent clip slot whether or not there is a clip. I thought this made more sense for session view.  
 4. Anytime you drop a clip in a track, it will automatically be renamed to match the above rules.  
 5. Take Lanes are unaffected by this script.
-6. If a clip is dragged into default tracks or in the Clip/Device Drop Area this will cause this clip's track to be named after the clip instead. This becomes a monster when combined with <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>.
+6. If a clip is dragged into default tracks or in the Clip/Device Drop Area this will cause this clip's track to be named after the clip instead. This becomes a monster when combined with <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>. Note: this feature works only when the default names of 'Audio' or 'Midi' are used for default audio or midi tracks.
 7. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
 
 ## Open Issues:
