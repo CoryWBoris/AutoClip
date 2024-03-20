@@ -38,7 +38,7 @@ For now, every clip is named at once when loading the control surface, I can und
 
 ## Other Related Programs:
 <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>  
-A stunning custom color layout maker for Ableton Live 11+ which instantanesouly changes track and clip colors based on name, no plugins necessary.
+A stunning custom color layout maker for Ableton Live 11+ on Mac AND Windows which instantly changes track and clip colors based on name, no plugins necessary.
 
 ### Coffees Welcome!
 - Paypal: tromboris@gmail.com
