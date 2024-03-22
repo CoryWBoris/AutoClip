@@ -27,10 +27,18 @@ By: Cory Boris
 3. The number in a renamed clip's name in Session view is not based on the next adjacent clip but rather the next adjacent clip slot whether or not there is a clip. I thought this made more sense for session view.  
 4. Anytime you drop a clip in a track, it will automatically be renamed to match the above rules.  
 5. Take Lanes are unaffected by this script.
-6. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
+6. If there is one clip in a track in arrangement view, it won't have a number, it keeps its original name.
+7. If you have your default Audio and Midi tracks named 'Audio' and 'Midi', then upon dropping one or more clips into the clip/device area or into a default track, the default track's name now becomes the same as the clip's name without the last number separated by a space. So Clip 3 becomes Clip, Clip 3 4 becomes Clip 3, etc.
+8. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
 
-I'm trying to add the feature where dragging a clip into a default track triggers the track to name change to the clip and the clip will be named in accordance with the regular naming pattern used by the script, but it is giving me some issue. To be announced!
+Note: You may notice that undo has additional steps from this script. That is normal. Basically, this script adds various custom actions and so one more additional action is added to your undo stack whenever you do the following:  
+-Drag a clip to the clip/device area  
+-Drag a clip to a default track  
+-Add a clip to a track  
+-Rename a track with clips in it  
+-Duplicate a clip  
 
+If I find others I will post them.
 
 ## Open Issues:
 None so far, but please let me know if there are any by all means!
