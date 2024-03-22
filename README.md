@@ -41,7 +41,7 @@ Note: You may notice that undo has additional steps from this script. That is no
 If I find others I will post them.
 
 ## Open Issues:
-None so far, but please let me know if there are any by all means!
+When adding a new scene a session view track, the event handler is not directly registered by this action.
 
 ## Future Updates:
 I was thinking it would be cool to use the name of the track to determine if clips will be renamed or not based on a code word.  
