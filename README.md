@@ -1,6 +1,6 @@
 # AutoClip
 
-![Stability Badge](https://img.shields.io/badge/-stable-blue)  
+![Beta Badge](https://img.shields.io/badge/-beta-blue)  
 By: Cory Boris  
 © 2024 MIT License
 ## A Control Surface for Automatically Changing Clips' Names Based on the Name of their Parent Track In Ableton Live 11+ WITHOUT PLUGINS ;)
@@ -41,7 +41,8 @@ Note: You may notice that undo has additional steps from this script. That is no
 If I find others I will post them.
 
 ## Open Issues:
-When adding a new scene a session view track, the event handler is not directly registered by this action.
+When rapidly deleting tracks, we get an error as shown in the open issues section.  
+Also for now, there is a clip event handler conflict with TrueAutoColor, but functionality of both scripts isn't prevented.
 
 ## Future Updates:
 I was thinking it would be cool to use the name of the track to determine if clips will be renamed or not based on a code word.  
