@@ -9,15 +9,21 @@ def defer_rename_track(track, clip_slot, i):
         track.name = clip_slot.clip.name
 
 def defer_rename_clip(track, clip_slot, i):
-    if clip_slot.has_clip:
-        clip = clip_slot.clip
-        clip.name = f"{clip_slot.canonical_parent.name} {list(clip_slot.canonical_parent.clip_slots).index(clip_slot) + 1}"
+    try:
+        if track is not None and clip_slot is not None and clip_slot.has_clip and isinstance(clip_slot, AGroupAndClipSlotBase) and clip_slot.has_clip:
+            clip = clip_slot.clip
+            if clip is not None:
+                clip.name = f"{clip_slot.canonical_parent.name} {list(clip_slot.canonical_parent.clip_slots).index(clip_slot) + 1}"
+    except Exception as e:
+        print(f"Error: {e}")
 
 def set_clip_names(track, song):
     if track not in song.tracks or not hasattr(track, 'mixer_device') or track.is_foldable or hasattr(track, 'return_track') or hasattr(track, 'master_track'):
         return
-    for i, clip_slot in enumerate(track.clip_slots, start=1):
+    clip_slots = list(track.clip_slots)  # Create a copy of clip_slots
+    for i, clip_slot in enumerate(clip_slots, start=1):  # Iterate over the copy
         if clip_slot is not None and clip_slot.has_clip:
+            logging.info(f'clip_slot before defer_rename_clip: {clip_slot}')
             defer_rename_track(track, clip_slot, i)
             defer_rename_clip(track, clip_slot, i)
     for i, clip in enumerate(track.arrangement_clips, start=1):
@@ -69,7 +75,8 @@ class AutoClip(ControlSurface):
         if track in self.song.tracks:
             for clip_slot in track.clip_slots:
                 if clip_slot in self._clip_slot_listeners:
-                    self._clip_slot_listeners[clip_slot].clear()
+                    clip_slot.remove_has_clip_listener(self._clip_slot_listeners[clip_slot])
+                    del self._clip_slot_listeners[clip_slot]
     
     def add_clip_listeners(self):
         for track in self.song.tracks:
@@ -96,7 +103,6 @@ class AutoClip(ControlSurface):
             self.tracks_added_listener()
             self.add_track_listeners([track])
             self.add_clip_slot_listeners(track)
-            self.add_arrangement_clips_listener(track)
             if track.is_grouped:
                 self.add_group_track_listeners(track)
             for i, clip_slot in enumerate(track.clip_slots, start=1):
@@ -113,13 +119,11 @@ class AutoClip(ControlSurface):
         for track in tracks:
             if track.is_grouped:
                 self.add_group_track_listeners(track)
-                self.add_arrangement_clips_listener(track)
             elif not track.is_foldable:
                 name_listener = partial(self.track_name_changed_listener, track)
                 self._name_listeners[track] = name_listener
                 track.add_name_listener(name_listener)
                 self.add_clip_slot_listeners(track)
-                self.add_arrangement_clips_listener(track)
             if track not in self._clip_slots_listeners:
                 self._clip_slots_listeners[track] = self.on_clip_slots_changed
                 track.add_clip_slots_listener(self._clip_slots_listeners[track])
@@ -131,32 +135,33 @@ class AutoClip(ControlSurface):
     def on_clip_slots_changed(self):
         for track in self.song.tracks:
             for i, clip_slot in enumerate(track.clip_slots):
-                if clip_slot not in self._clip_slot_listeners:
-                    self.add_clip_slot_listeners(track)
-                    if clip_slot is not None and clip_slot.has_clip:
-                        self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
+                if clip_slot is not None and isinstance(clip_slot, Live.ClipSlot.ClipSlot):
+                    if clip_slot not in self._clip_slot_listeners:
+                        self.add_clip_slot_listeners(track)
+                        if clip_slot is not None and clip_slot.has_clip:
+                            self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
 
     def add_clip_slot_listeners(self, track):
         if track in self.song.tracks:
             for clip_slot in track.clip_slots:
-                if clip_slot in track.clip_slots:
-                    logging.info(f'Type of clip_slot: {type(clip_slot)}')
-                    clip_slot_listener = partial(self.clip_slot_changed_listener, clip_slot)
-                    self._clip_slot_listeners[clip_slot] = clip_slot_listener
-                    clip_slot.add_has_clip_listener(clip_slot_listener)
-                    if clip_slot is not None and clip_slot.has_clip:
-                        self.clip_slot_changed_listener(clip_slot)
+                clip_slot_listener = partial(self.clip_slot_changed_listener, clip_slot)
+                self._clip_slot_listeners[clip_slot] = clip_slot_listener
+                clip_slot.add_has_clip_listener(clip_slot_listener)
+                if clip_slot is not None and clip_slot.has_clip:
+                    self.clip_slot_changed_listener(clip_slot)
 
     def remove_track_listeners(self, tracks):
         if tracks is None:
             return
         for track in tracks:
             if track in self._name_listeners:
-                self._name_listeners[track].clear()
+                track.remove_name_listener(self._name_listeners[track])
+                del self._name_listeners[track]
             if track and not track.is_foldable and not track.is_grouped:
                 for clip_slot in track.clip_slots:
                     if clip_slot in self._clip_slot_listeners:
-                        self._clip_slot_listeners[clip_slot].clear()
+                        clip_slot.remove_has_clip_listener(self._clip_slot_listeners[clip_slot])
+                        del self._clip_slot_listeners[clip_slot]
 
     def track_name_changed_listener(self, track):
         if track.name in ['Audio', 'Midi']:  # Assuming 'Audio' and 'Midi' are the default names
@@ -171,14 +176,15 @@ class AutoClip(ControlSurface):
         self.schedule_message(0, partial(self.deferred_clip_slot_changed_listener, clip_slot))
 
     def deferred_clip_slot_changed_listener(self, clip_slot):
-        if clip_slot is not None and clip_slot.has_clip:
-            clip = clip_slot.clip
+        if clip_slot is not None and clip_slot.canonical_parent is not None:
             track = clip_slot.canonical_parent
-            if track is not None and track.name in ['Audio', 'Midi']:
-                track.name = clip.name
-            if clip.name is not None:
-                clip.name = f"{track.name} {list(track.clip_slots).index(clip_slot) + 1}"
-            self.schedule_message(0, partial(set_clip_names, track, self.song))
+            if isinstance(clip_slot, Live.ClipSlot.ClipSlot) and clip_slot.has_clip:
+                clip = clip_slot.clip
+                if track is not None and track.name in ['Audio', 'Midi']:
+                    track.name = clip.name
+                if clip.name is not None:
+                    clip.name = f"{track.name} {list(track.clip_slots).index(clip_slot) + 1}"
+                self.schedule_message(0, partial(set_clip_names, track, self.song))
 
     def track_clip_slots_changed_listener(self, track):
         for clip_slot in track.clip_slots:
@@ -228,31 +234,39 @@ class AutoClip(ControlSurface):
         current_tracks = set(self.doc.tracks)
         removed_tracks = self.processed_tracks - current_tracks
         for track in removed_tracks:
-            if track in self._track_listeners:
-                del self._track_listeners[track]
-            if track in self._name_listeners:
-                del self._name_listeners[track]
+            # Remove listeners from individual clip slots
+            for clip_slot in track.clip_slots:
+                listener = self._clip_slot_listeners.pop(clip_slot, None)
+                if listener:
+                    try:
+                        clip_slot.remove_has_clip_listener(listener)
+                    except Boost.Python.ArgumentError:
+                        pass
+            # Remove listeners from the track
+            listener = self._track_listeners.pop(track, None)
+            if listener:
+                track.remove_name_listener(listener)
+            listener = self._name_listeners.pop(track, None)
+            if listener:
+                track.remove_name_listener(listener)
             self.remove_track_listeners([track])
-            self.remove_clip_slot_listeners(track)
-            self.remove_arrangement_clips_listener(track)  # new line
+            self.remove_arrangement_clips_listener(track)
             if track.is_grouped:
-                self.remove_group_track_listeners(track) 
+                self.remove_group_track_listeners(track)
         self.processed_tracks = current_tracks
     
     def remove_arrangement_clips_listener(self, track):
-        # Assuming that arrangement_clips_listener is a dictionary where
-        # the keys are the tracks and the values are the listeners
-        if track in self.arrangement_clips_listener:
-            # Remove the listener from the track
-            track.remove_listener(self.arrangement_clips_listener[track])
-            # Remove the track from the dictionary
-            del self.arrangement_clips_listener[track]
+        try:
+            if track in self.arrangement_clips_listener:
+                track.remove_listener(self.arrangement_clips_listener[track])
+                del self.arrangement_clips_listener[track]
+        except Exception as e:
+            print(f"Error removing arrangement clips listener: {e}")
 
     def remove_group_track_listeners(self, track):
-        # Assuming that group_track_listeners is a dictionary where
-        # the keys are the tracks and the values are the listeners
-        if track in self.group_track_listeners:
-            # Remove the listener from the track
-            track.remove_listener(self.group_track_listeners[track])
-            # Remove the track from the dictionary
-            del self.group_track_listeners[track]
+        try:
+            if track in self.group_track_listeners:
+                track.remove_listener(self.group_track_listeners[track])
+                del self.group_track_listeners[track]
+        except Exception as e:
+            print(f"Error removing group track listeners: {e}")
