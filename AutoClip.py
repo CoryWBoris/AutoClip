@@ -58,7 +58,6 @@ class AutoClip(ControlSurface):
             self.on_tracks_changed()
             set_clip_names(track, self.song)
         self.add_clip_listeners()
-        self._color_listeners = {}
         self._clip_slot_listeners = defaultdict(lambda: None)
         self.add_track_listeners(get_all_tracks(self.doc))
         self.doc.add_tracks_listener(self.tracks_added_listener)
@@ -138,10 +137,7 @@ class AutoClip(ControlSurface):
         if tracks is None:
             return
         for track in tracks:
-            if track and not track.is_foldable and not track.is_grouped:
-                color_listener = self._color_listeners.get(track)
-                if color_listener is not None and track.color_has_listener(color_listener):
-                    track.remove_color_listener(color_listener)
+            if not track.is_foldable and not track.is_grouped:
                 for clip_slot in track.clip_slots:
                     clip_slot_listener = self._clip_slot_listeners.get(clip_slot)
                     if clip_slot_listener is not None and clip_slot.has_clip_has_listener(clip_slot_listener):
