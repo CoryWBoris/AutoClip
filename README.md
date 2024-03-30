@@ -1,6 +1,6 @@
 # AutoClip
 
-![Beta Badge](https://img.shields.io/badge/-beta-blue)  
+![Stable Badge](https://img.shields.io/badge/-stable-blue)  
 By: Cory Boris  
 © 2024 MIT License
 ## A Control Surface for Automatically Changing Clips' Names Based on the Name of their Parent Track In Ableton Live 11+ WITHOUT PLUGINS ;)
