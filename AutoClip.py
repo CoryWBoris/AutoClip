@@ -2,13 +2,16 @@ import Live
 from ableton.v2.control_surface import ControlSurface
 from functools import partial
 from collections import defaultdict
+# correctly import ClipSlot class information
+from ableton.v2.base import liveobj_valid, liveobj_changed
 
 def defer_rename_track(track, clip_slot, i):
     if track.name in ['Audio', 'Midi']:
         track.name = clip_slot.clip.name
 
 def defer_rename_clip(track, clip_slot, i):
-    if clip_slot.has_clip:
+    # Use liveobj_valid to check if clip_slot is a valid Live API object
+    if liveobj_valid(clip_slot) and clip_slot.has_clip:
         clip = clip_slot.clip
         clip.name = f"{clip_slot.canonical_parent.name} {list(clip_slot.canonical_parent.clip_slots).index(clip_slot) + 1}"
 
@@ -16,7 +19,7 @@ def set_clip_names(track, song):
     if track not in song.tracks or not hasattr(track, 'mixer_device') or track.is_foldable or hasattr(track, 'return_track') or hasattr(track, 'master_track'):
         return
     for i, clip_slot in enumerate(track.clip_slots, start=1):
-        if clip_slot.has_clip:
+        if clip_slot is not None and clip_slot.has_clip:
             defer_rename_track(track, clip_slot, i)
             defer_rename_clip(track, clip_slot, i)
     for i, clip in enumerate(track.arrangement_clips, start=1):
@@ -121,7 +124,7 @@ class AutoClip(ControlSurface):
     def on_clip_slots_changed(self):
         for track in self.song.tracks:
             for i, clip_slot in enumerate(track.clip_slots, start=1):
-                if clip_slot.has_clip and clip_slot not in self._clip_slot_listeners:
+                if clip_slot is not None and clip_slot.has_clip and clip_slot not in self._clip_slot_listeners:
                     self.add_clip_slot_listeners(track)
                     self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
 
@@ -138,9 +141,11 @@ class AutoClip(ControlSurface):
             return
         for track in tracks:
             if not track.is_foldable and not track.is_grouped:
+                name_listener = self._name_listeners[track]
+                track.remove_color_listener(color_listener)
                 for clip_slot in track.clip_slots:
                     clip_slot_listener = self._clip_slot_listeners.get(clip_slot)
-                    if clip_slot_listener is not None and clip_slot.has_clip_has_listener(clip_slot_listener):
+                    if clip_slot_listener is not None:
                         clip_slot.remove_has_clip_listener(clip_slot_listener)
 
     def track_name_changed_listener(self, track):
@@ -201,6 +206,16 @@ class AutoClip(ControlSurface):
             track.add_arrangement_clips_listener(partial(self.arrangement_clip_tracks_changed_listener, track))
 
     def tracks_removed_listener(self):
-        for track in self.song.tracks:
+        current_tracks = set(self.doc.tracks)
+        removed_tracks = self.processed_tracks - current_tracks
+        for track in removed_tracks:
             if track and track.canonical_parent:
                 self.remove_track_listeners([track])
+                self.remove_clip_slot_listeners(track)  # Add this line
+        self.processed_tracks = current_tracks
+    
+    def remove_clip_slot_listeners(self, track):
+        for clip_slot in track.clip_slots:
+            clip_slot_listener = self._clip_slot_listeners.get(clip_slot)
+            if clip_slot_listener is not None and clip_slot.has_clip_has_listener(clip_slot_listener):
+                clip_slot.remove_has_clip_listener(clip_slot_listener)
