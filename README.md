@@ -1,6 +1,17 @@
 # AutoClip
 
 ![Stable Badge](https://img.shields.io/badge/-stable-blue)  
+
+![Single Clip](./assets/AutoClip_1.gif)  
+
+![Order Maintained From Duplicate](./assets/AutoClip_2.gif)  
+
+![Order Maintained From Delete](./assets/AutoClip_3.gif)  
+
+![Session View Naming](./assets/AutoClip_4.gif)  
+
+![Clip Creates Named Track](./assets/AutoClip_5.gif)  
+
 By: Cory Boris  
 © 2024 MIT License
 ## A Control Surface for Automatically Changing Clips' Names Based on the Name of their Parent Track In Ableton Live 11+ WITHOUT PLUGINS ;)
