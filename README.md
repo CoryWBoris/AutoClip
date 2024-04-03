@@ -52,7 +52,7 @@ Note: You may notice that undo has additional steps from this script. That is no
 If I find others I will post them.
 
 ## Open Issues:
-Beta version only: When rapidly deleting tracks, we get an error as shown in the open issues section. And I mean rapid. But if you just delete at a regular pace it wouldn't be an issue. and this is only an error message that I am so fucking stuck on it's not funny at this point. I really want to fix the issue but it is specific to removing event handlers rapidly. As of now it seems that the issue very well could be specific to naming clips in clip slots as opposed to  any other parameter. I won't give up though.  No functionality is interrupted with the error message.  
+No errors!
 
 ## Future Updates:
 I was thinking it would be cool to use the name of the track to determine if clips will be renamed or not based on a code word.  
