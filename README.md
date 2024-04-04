@@ -63,7 +63,8 @@ For now, every clip is named at once when loading the control surface, I can und
 A stunning custom color layout maker for Ableton Live 11+ on Mac AND Windows which instantly changes track and clip colors based on name, no plugins necessary.
 
 ### Coffees Welcome!
-- Paypal: tromboris@gmail.com
+- [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red)](https://github.com/sponsors/CoryWBoris)
+- [![PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/coryboris)
 - Venmo: @Cory-Boris
 - Ethereum Address: `0x3f6af994201c17eF1E86ff057AB2a2F6CB0D1f6a`
 
