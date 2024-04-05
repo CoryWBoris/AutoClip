@@ -39,8 +39,9 @@ By: Cory Boris
 4. Anytime you drop a clip in a track, it will automatically be renamed to match the above rules.  
 5. Take Lanes are unaffected by this script.
 6. If there is one clip in a track in arrangement view, it won't have a number, it keeps its original name.
-7. If you have your default Audio and Midi tracks named 'Audio' and 'Midi', then upon dropping one or more clips into the clip/device area or into a default track, the default track's name now becomes the same as the clip's name without the last number separated by a space. So Clip 3 becomes Clip, Clip 3 4 becomes Clip 3, etc.
-8. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
+7. If you have your default Audio and Midi tracks named 'Audio' and 'Midi', then upon dropping one or more clips into the clip/device area or into a default track, the default track's name now becomes the same as the clip's name without the last number separated by a space. So Clip 3 becomes Clip, Clip 3 4 becomes Clip 3, etc.  
+   **Note:** With multiple clips dragged simultaneously into a blank clip/device area, the newly created track's name will then become that of the first clip from left to right.
+9. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
 
 Note: You may notice that undo has additional steps from this script. That is normal. Basically, this script adds various custom actions and so two actions are added to your undo stack whenever you do the following:  
 -Drag a clip to the clip/device area  
