@@ -50,7 +50,7 @@ By: Cory Boris
 -Rename a track with clips in it  
 -Duplicate a clip  
 
-**Final note:** There is a rare glitch that happens if you haven't updated your default set with new tracks from Ableton 11 or 12. In other words, if you have the same default set from Ableton 10 and lower and never changed it, there could be some weird issues since you actually may have carried over slightly different references from the older version of Ableton. In order for this script to work perfectly, your default Audio track must be named 'Audio' and the default Midi track named 'Midi'.  
+**Final note:** By default, Ableton includes '#' in the name of the default audio and midi tracks as a way to number the tracks automatically. But when using this sofrtware, if you have a '#' in the name of any default track, then when dropping a clip into the clip/device area, this will cause an infinite recursion glitch. The only way to prevent this error when working with this script is to not have '#' in the track name. I will be trying to make it so this glitch doesn't happen, but for now this is the only way to abate the glitch. 
 
 If I find other bugs or glitches I will post them here.
 
