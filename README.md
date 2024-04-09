@@ -40,17 +40,19 @@ By: Cory Boris
 5. Take Lanes are unaffected by this script.
 6. If there is one clip in a track in arrangement view, it won't have a number, it keeps its original name.
 7. If you have your default Audio and Midi tracks named 'Audio' and 'Midi', then upon dropping one or more clips into the clip/device area or into a default track, the default track's name now becomes the same as the clip's name without the last number separated by a space. So Clip 3 becomes Clip, Clip 3 4 becomes Clip 3, etc.  
-   **Note:** With multiple clips dragged simultaneously into a blank clip/device area, the newly created track's name will then become that of the first clip from left to right.
+   **Note:** With multiple clips dragged simultaneously into a blank clip/device area, the newly created track's name will then become that of the first clip without its appended number from left to right.
 9. Lastly, when this control surface is enabled, you won't be able to name clips manually, as their names will always be reset whenever you drag a single clip.
 
-Note: You may notice that undo has additional steps from this script. That is normal. Basically, this script adds various custom actions and so two actions are added to your undo stack whenever you do the following:  
+**Note 2:** You may notice that undo has additional steps from this script. That is normal. Basically, this script adds various custom actions and so two actions are added to your undo stack whenever you do the following:  
 -Drag a clip to the clip/device area  
 -Drag a clip to a default track  
 -Add a clip to a track  
 -Rename a track with clips in it  
 -Duplicate a clip  
 
-If I find others I will post them.
+**Final note:** There is a rare glitch that happens if you haven't updated your default set with new tracks from Ableton 11 or 12. In other words, if you have the same default set from Ableton 10 and lower and never changed it, there could be some weird issues since you actually may have carried over slightly different references from the older version of Ableton. In order for this script to work perfectly, your default Audio track must be named 'Audio' and the default Midi track named 'Midi'.  
+
+If I find other bugs or glitches I will post them here.
 
 ## Open Issues:
 No errors!
