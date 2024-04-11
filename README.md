@@ -50,12 +50,16 @@ By: Cory Boris
 -Rename a track with clips in it  
 -Duplicate a clip  
 
-**Final note:** By default, Ableton includes '#' in the name of the default audio and midi tracks as a way to number the tracks automatically. But when using this sofrtware, if you have a '#' in the name of any default track, then when dropping a clip into the clip/device area, this will cause an infinite recursion glitch. The only way to prevent this error when working with this script is to not have '#' in the track name. I will be trying to make it so this glitch doesn't happen, but for now this is the only way to abate the glitch. 
+**Final note:** By default, Ableton includes '#' in the name of the default audio and midi tracks as a way to number the tracks automatically. But when using this program, if you have a '#' in the name of any default track, then when dropping a clip into the clip/device area, this will cause an infinite recursion glitch. The only way to prevent this error when working with this script is to not have '#' in the track name. I will be trying to make it so this glitch doesn't happen, but for now this is the only way to abate the glitch. And getting this to not conflict with '#' is proving to be nigh-impossible so far.  
+
+I am confident to say that the '#' character has two functions: numbering the track in its top to down order, as well as naming a track after its clip. However, there are a couple things to make note of here. When the automatic track naming function that is built into the '#' symbol takes place, the number of the track still gets added, proving to be frustrating if a clip has the unfortunate fate of starting with a number. My solution does fine to name the track after a clip if and only if the default name of your track is 'Audio' or 'Midi'.  
+
+After a bunch of troublshooting what happens when '#' interacts with my script, '#' is replaced with its number or clip name as an internal process in C++, and anytime I try and interfere with that particular process, I fail because the transformative process of replacing '#' takes precedence over my script.  
 
 If I find other bugs or glitches I will post them here.
 
 ## Open Issues:
-No errors!
+Can't interact with '#' character, and attempting to do so causes infinite recursion.  
 
 ## Future Updates:
 I was thinking it would be cool to use the name of the track to determine if clips will be renamed or not based on a code word.  
