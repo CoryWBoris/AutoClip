@@ -2,7 +2,6 @@ import Live
 from ableton.v2.control_surface import ControlSurface
 from functools import partial
 from collections import defaultdict
-# correctly import ClipSlot class information
 from ableton.v2.base import liveobj_valid, liveobj_changed
 
 def defer_rename_track(track, clip_slot, i):
@@ -11,15 +10,15 @@ def defer_rename_track(track, clip_slot, i):
 
 def defer_rename_clip(track, clip_slot, i):
     # Use liveobj_valid to check if clip_slot is a valid Live API object
-    if liveobj_valid(clip_slot) and clip_slot.has_clip:
+    if liveobj_valid(clip_slot) and clip_slot.has_clip and track.name != 'DefaultBounce':
         clip = clip_slot.clip
         clip.name = f"{clip_slot.canonical_parent.name} {list(clip_slot.canonical_parent.clip_slots).index(clip_slot) + 1}"
 
 def set_clip_names(track, song):
-    if track not in song.tracks or not hasattr(track, 'mixer_device') or track.is_foldable or hasattr(track, 'return_track') or hasattr(track, 'master_track'):
+    if track not in song.tracks or not hasattr(track, 'mixer_device') or track.is_foldable or hasattr(track, 'return_track') or hasattr(track, 'master_track') or track.name == 'DefaultBounce':
         return
     for i, clip_slot in enumerate(track.clip_slots, start=1):
-        if clip_slot is not None and clip_slot.has_clip:
+        if clip_slot is not None and clip_slot.has_clip and track.name != 'DefaultBounce':
             defer_rename_track(track, clip_slot, i)
             defer_rename_clip(track, clip_slot, i)
     for i, clip in enumerate(track.arrangement_clips, start=1):
@@ -69,12 +68,12 @@ class AutoClip(ControlSurface):
     def add_clip_listeners(self):
         for track in self.song.tracks:
             for clip_slot in track.clip_slots:
-                if clip_slot.has_clip:
-                    clip_slot.add_has_clip_listener(self.clip_slot_changed_listener)
+                if clip_slot is not None and clip_slot.has_clip:
+                    clip_slot.add_has_clip_listener(self.clip_slot_changed_listener(clip_slot))
 
     def on_tracks_added(self):
         for track in self.song.tracks:
-            if track not in self._name_listeners:
+            if track not in self._name_listeners and track.name != 'DefaultBounce':
                 self.add_track_listeners([track])
 
     def disconnect(self):
@@ -89,14 +88,15 @@ class AutoClip(ControlSurface):
     def on_tracks_changed(self):
         print('Tracks changed is reached')
         for track in self.song.tracks:
-            self.tracks_added_listener()
-            self.add_track_listeners([track])
-            self.add_clip_slot_listeners(track)
-            self.add_arrangement_clips_listener(track)
-            if track.is_grouped:
-                self.add_group_track_listeners(track)
-            for i, clip_slot in enumerate(track.clip_slots, start=1):
-                self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
+            if track.name != 'DefaultBounce':
+                self.tracks_added_listener()
+                self.add_track_listeners([track])
+                self.add_clip_slot_listeners(track)
+                self.add_arrangement_clips_listener(track)
+                if track.is_grouped:
+                    self.add_group_track_listeners(track)
+                for i, clip_slot in enumerate(track.clip_slots, start=1):
+                    self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
 
     def add_group_track_listeners(self, track):
         name_listener = partial(self.track_name_changed_listener, track)
@@ -123,18 +123,20 @@ class AutoClip(ControlSurface):
 
     def on_clip_slots_changed(self):
         for track in self.song.tracks:
-            for i, clip_slot in enumerate(track.clip_slots, start=1):
-                if clip_slot is not None and clip_slot.has_clip and clip_slot not in self._clip_slot_listeners:
-                    self.add_clip_slot_listeners(track)
-                    self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
+            if track.name != 'DefaultBounce':
+                for i, clip_slot in enumerate(track.clip_slots, start=1):
+                    if clip_slot is not None and clip_slot.has_clip and clip_slot not in self._clip_slot_listeners:
+                        self.add_clip_slot_listeners(track)
+                        self.schedule_message(0, partial(defer_rename_clip, track, clip_slot, i))
 
     def add_clip_slot_listeners(self, track):
         for clip_slot in track.clip_slots:
-            clip_slot_listener = partial(self.clip_slot_changed_listener, clip_slot)
-            self._clip_slot_listeners[clip_slot] = clip_slot_listener
-            clip_slot.add_has_clip_listener(clip_slot_listener)
-            if clip_slot.has_clip:
-                self.clip_slot_changed_listener(clip_slot)
+            if clip_slot not in self._clip_slot_listeners:
+                clip_slot_listener = partial(self.clip_slot_changed_listener, clip_slot)
+                self._clip_slot_listeners[clip_slot] = clip_slot_listener
+                clip_slot.add_has_clip_listener(clip_slot_listener)
+                if clip_slot.has_clip:
+                    self.clip_slot_changed_listener(clip_slot)
 
     def remove_track_listeners(self, tracks):
         if tracks is None:
@@ -149,7 +151,7 @@ class AutoClip(ControlSurface):
                         clip_slot.remove_has_clip_listener(clip_slot_listener)
 
     def track_name_changed_listener(self, track):
-        if track.name in ['Audio', 'Midi']:  # Assuming 'Audio' and 'Midi' are the default names
+        if track.name == 'DefaultBounce' or track.name in ['Audio', 'Midi']:  # Assuming 'Audio' and 'Midi' are the default names
             pass
         else:
             self.schedule_message(0, lambda: self.deferred_track_name_changed_listener(track))
@@ -158,6 +160,8 @@ class AutoClip(ControlSurface):
         set_clip_names(track, self.song)
 
     def clip_slot_changed_listener(self, clip_slot):
+        if clip_slot.canonical_parent.name == 'DefaultBounce':
+            return
         self.schedule_message(0, partial(self.deferred_clip_slot_changed_listener, clip_slot))
 
     def deferred_clip_slot_changed_listener(self, clip_slot):
@@ -170,6 +174,8 @@ class AutoClip(ControlSurface):
             self.schedule_message(0, partial(set_clip_names, track, self.song))
 
     def track_clip_slots_changed_listener(self, track):
+        if track.name == 'DefaultBounce':
+            return
         for clip_slot in track.clip_slots:
             if not clip_slot in self._clip_slot_listeners:
                 clip_slot_listener = partial(self.clip_slot_changed_listener, clip_slot)
@@ -183,16 +189,19 @@ class AutoClip(ControlSurface):
         current_tracks = set(self.doc.tracks)
         new_tracks = current_tracks - self.processed_tracks
         for track in new_tracks:
-            self._track_listeners[track] = self.on_tracks_changed 
-            self.add_track_listeners([track])
-            self.add_clip_slot_listeners(track)
-            self.add_arrangement_clips_listener(track)
-            if track.is_grouped:
-                self.add_group_track_listeners(track)
-            self.schedule_message(0, lambda track=track: set_clip_names(track, self.song))
+            if track.name != 'DefaultBounce':
+                self._track_listeners[track] = self.on_tracks_changed 
+                self.add_track_listeners([track])
+                self.add_clip_slot_listeners(track)
+                self.add_arrangement_clips_listener(track)
+                if track.is_grouped:
+                    self.add_group_track_listeners(track)
+                self.schedule_message(0, lambda track=track: set_clip_names(track, self.song))
         self.processed_tracks = current_tracks
 
     def arrangement_clip_tracks_changed_listener(self, track):
+        if track.name == 'DefaultBounce':
+            return
         self.schedule_message(0, lambda: self.deferred_arrangement_clip_tracks_changed_listener(track))
 
     def deferred_arrangement_clip_tracks_changed_listener(self, track):
@@ -219,3 +228,11 @@ class AutoClip(ControlSurface):
             clip_slot_listener = self._clip_slot_listeners.get(clip_slot)
             if clip_slot_listener is not None and clip_slot.has_clip_has_listener(clip_slot_listener):
                 clip_slot.remove_has_clip_listener(clip_slot_listener)
+                del self._clip_slot_listeners[clip_slot]  # Remove the listener from the dictionary
+    
+    def disconnect(self):
+        self.song.remove_tracks_listener(self.on_tracks_changed)
+        self.song.remove_tracks_listener(self.on_tracks_added)
+        self.doc.remove_tracks_listener(self.tracks_added_listener)
+        self.doc.remove_tracks_listener(self.tracks_removed_listener)
+        super().disconnect()
